@@ -1,0 +1,5 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+10.0.0.10 master.kube master
+10.0.0.11 node1.kube node1
+10.0.0.12 node2.kube node2
+10.0.0.13 node3.kube node3

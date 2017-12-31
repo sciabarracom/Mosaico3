@@ -1,0 +1,5 @@
+- name: join nodes
+  shell: "{{hostvars[master_hostname].kubeadm_join}}"
+  args:
+    creates: /etc/kubeadm-join.done
+  when: inventory_hostname != master_hostname

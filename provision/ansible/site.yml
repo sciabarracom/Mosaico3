@@ -1,0 +1,11 @@
+---
+- name: build nodes
+  hosts: all
+  become: True
+  gather_facts: True
+  vars:
+    master_hostname: "{{ groups['masters'][0] }}"
+  roles:
+    - prepare
+    #- master
+    #- nodes

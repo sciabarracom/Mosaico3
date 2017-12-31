@@ -1,0 +1,33 @@
+- yum_repository:
+    name: kubernetes
+    description: kubernetes
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    gpgkey: https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    gpgcheck: yes
+    enabled: yes
+- name: update packages
+  yum: name='*' state=latest
+- selinux:
+    state: disabled
+- name: install docker
+  yum: name={{ item }} state=present
+  with_items:
+      - docker
+      - kubelet
+      - kubeadm
+      - kubectl
+      - ntp
+- service: name=docker state=started enabled=yes
+- service: name=firewalld state=stopped enabled=no
+- service: name=ntpd state=started enabled=yes
+- service: name=kubelet state=started enabled=yes
+- lineinfile: dest=/etc/sysctl.conf line='net.bridge.bridge-nf-call-ip6tables = 1' state=present
+- lineinfile: dest=/etc/sysctl.conf line='net.bridge.bridge-nf-call-iptables = 1' state=present
+- lineinfile: dest=/etc/fstab regexp='^/[\S]+\s+swap\s+swap ' state=absent
+- name: swap off
+  shell: >
+      swapoff -a ;
+      sysctl -p ;
+      touch /etc/swap-is-off
+  args:
+    creates: /etc/swap-is-off

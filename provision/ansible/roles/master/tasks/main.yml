@@ -1,0 +1,26 @@
+- name: reset kube
+  shell: "kubeadm reset"
+  when: inventory_hostname == master_hostname
+- name: initialize kube
+  shell: "kubeadm init --apiserver-advertise-address=10.0.0.10"
+  args:
+  register: kubeadm_out
+  when: inventory_hostname == master_hostname
+- set_fact:
+    kubeadm_join: "{{kubeadm_out.stdout_lines[-1]}} && touch /etc/kubeadm-join.done"
+  when: inventory_hostname == master_hostname
+- name: kube config
+  shell: >
+    mkdir /home/vagrant/.kube ;
+    cp -f /etc/kubernetes/admin.conf /home/vagrant/.kube/config ;
+    chown -Rvf vagrant:vagrant /home/vagrant/.kube/
+  when: inventory_hostname == master_hostname
+- service: name=kubelet state=started enabled=yes
+- debug: var=kubeadm_join
+  when: inventory_hostname == master_hostname
+- name: install weave net
+  shell: >
+    export KUBECONFIG=/etc/kubernetes/admin.conf
+    export kubever=$(kubectl version | base64 | tr -d '\n')
+    kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+  when: inventory_hostname == master_hostname
