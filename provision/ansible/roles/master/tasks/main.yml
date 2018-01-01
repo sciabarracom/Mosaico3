@@ -1,26 +1,26 @@
-- name: reset kube
-  shell: "kubeadm reset"
-  when: inventory_hostname == master_hostname
 - name: initialize kube
-  shell: "kubeadm init --apiserver-advertise-address=10.0.0.10"
-  args:
-  register: kubeadm_out
-  when: inventory_hostname == master_hostname
-- set_fact:
-    kubeadm_join: "{{kubeadm_out.stdout_lines[-1]}} && touch /etc/kubeadm-join.done"
-  when: inventory_hostname == master_hostname
-- name: kube config
   shell: >
-    mkdir /home/vagrant/.kube ;
-    cp -f /etc/kubernetes/admin.conf /home/vagrant/.kube/config ;
-    chown -Rvf vagrant:vagrant /home/vagrant/.kube/
-  when: inventory_hostname == master_hostname
+    kubeadm reset ;
+    kubeadm init --apiserver-advertise-address=10.0.0.10
+  register: kubeadm_out
+  create: /etc/kubeadm-join.sh
+- lineinfile:
+    path: /etc/kubeadm-join.sh
+    line: "{{kubeadm_out.stdout_lines[-1]}}"
+    create: yes
+  when: kubeadm_out.stdout != ""
+- file: path=/home/vagrant/.kube state=directory owner=vagrant
+- file: src=/etc/kubernetes/admin.conf dest=/home/vagrant/.kube/config owner=vagrant
+- lineinfile:
+    path: /etc/profile
+    line: 'export KUBECONFIG=/etc/kubernetes/admin.conf'
 - service: name=kubelet state=started enabled=yes
-- debug: var=kubeadm_join
-  when: inventory_hostname == master_hostname
 - name: install weave net
   shell: >
-    export KUBECONFIG=/etc/kubernetes/admin.conf
-    export kubever=$(kubectl version | base64 | tr -d '\n')
+    export kubever=$(sudo kubectl version | base64 | tr -d '\n') ;
     kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
-  when: inventory_hostname == master_hostname
+- shell: kubectl get nodes master
+  register: result
+  until: result.stdout.find("Ready") != -1
+  retries: 20
+  delay: 5

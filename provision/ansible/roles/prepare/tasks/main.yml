@@ -17,13 +17,13 @@
       - kubeadm
       - kubectl
       - ntp
-- service: name=docker state=started enabled=yes
-- service: name=firewalld state=stopped enabled=no
-- service: name=ntpd state=started enabled=yes
-- service: name=kubelet state=started enabled=yes
 - lineinfile: dest=/etc/sysctl.conf line='net.bridge.bridge-nf-call-ip6tables = 1' state=present
 - lineinfile: dest=/etc/sysctl.conf line='net.bridge.bridge-nf-call-iptables = 1' state=present
-- lineinfile: dest=/etc/fstab regexp='^/[\S]+\s+swap\s+swap ' state=absent
+- name: fix kubelet config
+  replace:
+    path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+    regexp: '^(Environment="KUBELET_NETWORK_ARGS=).+"$'
+    replace: '\1"'
 - name: swap off
   shell: >
       swapoff -a ;
@@ -31,3 +31,8 @@
       touch /etc/swap-is-off
   args:
     creates: /etc/swap-is-off
+- lineinfile: dest=/etc/fstab regexp='^/[\S]+\s+swap\s+swap ' state=absent
+- service: name=docker state=started enabled=yes
+- service: name=firewalld state=stopped enabled=no
+- service: name=ntpd state=started enabled=yes
+- service: name=kubelet state=started enabled=yes

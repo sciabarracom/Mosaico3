@@ -1,3 +1,9 @@
+- shell: "cat /etc/kubeadm-join.sh"
+  args:
+  register: kubeadm_out
+- set_fact:
+    kubeadm_join:
+  when: inventory_hostname == master_hostname
 - name: join nodes
   shell: "{{hostvars[master_hostname].kubeadm_join}}"
   args:
