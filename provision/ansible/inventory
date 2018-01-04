@@ -2,5 +2,5 @@
 master
 [nodes]
 node1
-#node2
-#node3
+node2
+node3

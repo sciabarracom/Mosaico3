@@ -1,0 +1,21 @@
+- name: initialize kube
+  shell: kubeadm reset && kubeadm init --apiserver-advertise-address=10.0.0.10
+  args:
+    creates: /etc/kubeadm-join.sh
+  register: kubeadm_out
+#- debug: var=kubeadm_out
+- lineinfile:
+    path: /etc/kubeadm-join.sh
+    line: "{{kubeadm_out.stdout_lines[-1]}}"
+    create: yes
+  when: kubeadm_out.stdout.find("kubeadm join") != -1
+- lineinfile:
+    path: /root/.bash_profile
+    line: 'export KUBECONFIG=/etc/kubernetes/admin.conf'
+- file: path=/home/vagrant/.kube state=directory owner=vagrant
+- file: path=/home/centos/.kube state=directory owner=centos
+- command: cp /etc/kubernetes/admin.conf /home/vagrant/.kube/config
+- command: cp /etc/kubernetes/admin.conf /home/centos/.kube/config
+- file: name=/home/vagrant/.kube/config state=file owner=vagrant
+- file: name=/home/centos/.kube/config state=file owner=centos
+- service: name=kubelet state=started enabled=yes

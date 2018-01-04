@@ -1,11 +1,21 @@
 - shell: "cat /etc/kubeadm-join.sh"
-  args:
-  register: kubeadm_out
+  register: cat_kubeadm_join
+  when: inventory_hostname == master_hostname
 - set_fact:
-    kubeadm_join:
+    kubeadm_join: "{{cat_kubeadm_join.stdout}}"
   when: inventory_hostname == master_hostname
 - name: join nodes
-  shell: "{{hostvars[master_hostname].kubeadm_join}}"
+  shell: "kubeadm reset && {{hostvars[master_hostname].kubeadm_join}} && touch /etc/kubeadm-join.done"
   args:
     creates: /etc/kubeadm-join.done
   when: inventory_hostname != master_hostname
+- name: checking all nodes up
+  shell: >
+      export KUBECONFIG=/etc/kubernetes/admin.conf ;
+      kubectl get nodes {{item}}
+  register: result
+  until: result.stdout.find("Ready") != -1
+  retries: 100
+  delay: 10
+  with_items: "{{ groups['nodes'] }}"
+  when: inventory_hostname == master_hostname
