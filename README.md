@@ -13,6 +13,7 @@ You need also VirtualBox, Vagrant and Ansible installed in your environment.
 - `vagrant ssh-config >>~/.ssh/config`
 
 # Provision with ansible
+-  add `127.0.0.1 master node1 node2 node3` to your hostfile
 - `cd ../ansible`
 - `ansible-playbook site.yml`
 

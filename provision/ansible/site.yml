@@ -21,10 +21,3 @@
     master_hostname: "{{ groups['masters'][0] }}"
   roles:
     - { role: 'nodes', tags: 'nodes' }
-
-- name: finish
-  hosts: master
-  become: True
-  gather_facts: False
-  roles:
-    - { role: 'finish', tags: 'finish' }
