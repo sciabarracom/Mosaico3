@@ -1,14 +1,16 @@
 # Mosaico 3
 
-Scripts to install a kubernetes cluster in Vagrant
+Scripts to install a kubernetes cluster in VirtualBox with Vagrant and Ansible.
 
-You need a `bash` enviroment with SSH, either a Linux Distro, a Mac OSX or Windows 10 Bash (see below for Windows)
+You need a `bash` enviroment with SSH, either a Linux Distro, Mac OS/X or Windows 10 Bash (see below for Windows)
 
 You need also VirtualBox, Vagrant and Ansible installed in your environment. 
 
 ![Kubernetes On VirtualBox in Windows](kubernetes-the-hard-way.png)
 
-# Setup on Linux/OSX
+We assume you already have checked out the sources and `cd` into the main directory.
+
+# Setup on Linux  or OS/X
 
 The kit is for Unix, so works out of the box in Linux and OSX, as follows.
 
@@ -30,19 +32,21 @@ Run `sudo vi /etc/hosts` and add the following line:
 - `cd ../ansible`
 - `ansible-playbook site.yml`
 
-That is. Once done, `vagrant ssh master` and start playing with `Kubernetes`
+That is. Once done, enter in the master with `vagrant ssh master` and start playing with `Kubernetes`
 
 # Setup on windows
 
-The kit work also on Windows 10. However since Windows is not a native Unix, the procedure is slightly more complex and involves the use of two shells, the native PowerShell and Windows Bash.
+The kit works also on Windows 10 with Windows Bash. 
 
-The main problem is on Windows, `ansible` is not available as a Windows application. You need to install [Windows 10 Bash](https://www.windowscentral.com/how-install-bash-shell-command-line-windows-10) to use Ansible.  On the other side, both VirtualBox and Vagrant are native Windows applications and does not work with Windows Bash.
+However, since Windows is not a native Unix, the procedure is slightly more complex and involves the use of two shells, the native PowerShell and Windows Bash.
+
+The main problem is that on Windows, `ansible` is not available as a Windows application. You need to install [Windows 10 Bash](https://www.windowscentral.com/how-install-bash-shell-command-line-windows-10) to use Ansible.  On the other side, both VirtualBox and Vagrant are native Windows applications and does not work with Windows Bash.
 
 So the procedure on Windows 10 is the following.
 
 ## Create VMs with Vagrant in Windows
 
-First of course download Mosaico. Then install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](https://www.vagrantup.com/downloads.html) for Windows, and open a Windows shell (CMD or PowerShell).
+First, of course, checkout the sources for Mosaico. Then install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](https://www.vagrantup.com/downloads.html) for Windows, and open a Windows shell (CMD or PowerShell).
 
 - `cd provision\vagrant`
 - `vagrant up`
@@ -60,13 +64,13 @@ Remember to save it.
 
 ## Provision Kubernetes with Windows bash
 
-Now, ensure you have Windows Bash. Go in the Windows Store and install Ubuntu.
-Finally, open Windows bash and do the following steps.
+Now, ensure you have installed Windows Bash. Go in the Windows Store and install Ubuntu.
+Finally, open Windows Bash and do the following steps.
 
-First install `python`, `pip` and `ansible`:
+First, install `python`, `pip` and `ansible`:
 
 - `sudo apt-get update`
-- `sudo apt-get install python-pip`
+- `sudo apt-get install python python-pip`
 - `sudo pip install ansible`
 
 Second, create a proper configuration file for `ssh` (note we have to replace  `C:` with `/mnt/c`)
