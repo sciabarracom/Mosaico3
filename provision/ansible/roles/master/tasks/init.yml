@@ -4,7 +4,7 @@
   shell: >
        kubeadm reset &&
        sysctl -p &&
-       kubeadm init --apiserver-advertise-address=10.0.0.10
+       kubeadm init --apiserver-advertise-address=10.0.0.10 --pod-network-cidr=10.244.0.0/16
   args:
     creates: /etc/kubeadm-join.sh
   register: kubeadm_out
@@ -18,7 +18,7 @@
 - name: fix configmap for proxy
   shell: >
     export KUBECONFIG=/etc/kubernetes/admin.conf ;
-    kubectl -n kube-system get cm/kube-proxy -o yaml  
+    kubectl -n kube-system get cm/kube-proxy -o yaml
     | sed -e 's!clusterCIDR: ""!clusterCIDR: "10.0.0.0/24"!' >/etc/kubectl/kube-proxy.map ;
     kubectl -n kube-system replace cm/kube-proxy -f  /etc/kubectl/kube-proxy.map ;
     kubectl -n kube-system delete pods -l k8s-app=kube-proxy
