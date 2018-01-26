@@ -1,0 +1,20 @@
+---
+- name: reset install
+  hosts: all
+  become: True
+  gather_facts: True
+  tasks:
+    - command: modprobe {{item}}
+      with_items:    
+      - ip_vs
+      - ip_vs_rr
+      - ip_vs_wrr
+      - ip_vs_sh
+      - nf_conntrack_ipv4
+    - lineinfile: path=/etc/modules line='{{item}}' create=yes state=present
+      with_items: 
+      - ip_vs
+      - ip_vs_rr
+      - ip_vs_wrr
+      - ip_vs_sh
+      - nf_conntrack_ipv4

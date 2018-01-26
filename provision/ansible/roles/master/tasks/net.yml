@@ -1,8 +1,11 @@
+- sysctl: name=net.bridge.bridge-nf-call-ip6tables value=1 state=present reload=yes sysctl_set=yes
+- sysctl: name=net.bridge.bridge-nf-call-iptables value=1 state=present reload=yes sysctl_set=yes
 - name: install weave net
   shell: >
     export KUBECONFIG=/etc/kubernetes/admin.conf ;
     export kubever=$(sudo kubectl version | base64 | tr -d '\n') ;
-    kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+    curl --location "https://cloud.weave.works/k8s/net?k8s-version=$kubever" >/etc/kubectl/weave.yml ;
+    kubectl apply -f /etc/kubectl/weave.yml
 - shell: >
     export KUBECONFIG=/etc/kubernetes/admin.conf ;
     kubectl get pods -n kube-system -l name=weave-net

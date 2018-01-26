@@ -1,0 +1,19 @@
+---
+- name: reset install
+  hosts: all
+  become: True
+  gather_facts: True
+  tasks:
+  - name: uninstall docker
+    yum: name={{ item }} state=absent
+    with_items:
+      - kubectl
+      - kubeadm
+      - kubelet
+      - docker
+      - docker-client
+      - docker-common
+  - file: path=/etc/kubernetes state=absent
+  - file: path=/etc/kubectl state=absent
+  - file: path=/etc/kubeadm-join.sh state=absent
+  - file: path=/var/lib/etcd state=absent

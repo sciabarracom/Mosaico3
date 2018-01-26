@@ -1,2 +1,4 @@
 - include_tasks: init.yml
 - include_tasks: net.yml
+- include_tasks: kubectl.yml
+

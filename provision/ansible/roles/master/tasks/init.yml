@@ -1,21 +1,26 @@
+- lineinfile: dest=/etc/sysctl.conf line='net.bridge.bridge-nf-call-ip6tables = 1' state=present
+- lineinfile: dest=/etc/sysctl.conf line='net.bridge.bridge-nf-call-iptables = 1' state=present
 - name: initialize kube
-  shell: kubeadm reset && kubeadm init --apiserver-advertise-address=10.0.0.10
+  shell: >
+       kubeadm reset &&
+       sysctl -p &&
+       kubeadm init --apiserver-advertise-address=10.0.0.10
   args:
     creates: /etc/kubeadm-join.sh
   register: kubeadm_out
-#- debug: var=kubeadm_out
 - lineinfile:
     path: /etc/kubeadm-join.sh
     line: "{{kubeadm_out.stdout_lines[-1]}}"
     create: yes
   when: kubeadm_out.stdout.find("kubeadm join") != -1
-- lineinfile:
-    path: /root/.bash_profile
-    line: 'export KUBECONFIG=/etc/kubernetes/admin.conf'
-- file: path=/home/vagrant/.kube state=directory owner=vagrant
-- file: path=/home/centos/.kube state=directory owner=centos
-- command: cp /etc/kubernetes/admin.conf /home/vagrant/.kube/config
-- command: cp /etc/kubernetes/admin.conf /home/centos/.kube/config
-- file: name=/home/vagrant/.kube/config state=file owner=vagrant
-- file: name=/home/centos/.kube/config state=file owner=centos
 - service: name=kubelet state=started enabled=yes
+- file: name=/etc/kubectl state=directory
+- name: fix configmap for proxy
+  shell: >
+    export KUBECONFIG=/etc/kubernetes/admin.conf ;
+    kubectl -n kube-system get cm/kube-proxy -o yaml  
+    | sed -e 's!clusterCIDR: ""!clusterCIDR: "10.0.0.0/24"!' >/etc/kubectl/kube-proxy.map ;
+    kubectl -n kube-system replace cm/kube-proxy -f  /etc/kubectl/kube-proxy.map ;
+    kubectl -n kube-system delete pods -l k8s-app=kube-proxy
+  args:
+    creates: /etc/kubectl/kube-proxy.map

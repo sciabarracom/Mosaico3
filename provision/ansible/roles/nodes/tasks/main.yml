@@ -1,3 +1,5 @@
+- sysctl: name=net.bridge.bridge-nf-call-ip6tables value=1 state=present reload=yes sysctl_set=yes
+- sysctl: name=net.bridge.bridge-nf-call-iptables value=1 state=present reload=yes sysctl_set=yes
 - shell: "cat /etc/kubeadm-join.sh"
   register: cat_kubeadm_join
   when: inventory_hostname == master_hostname
@@ -5,9 +7,12 @@
     kubeadm_join: "{{cat_kubeadm_join.stdout}}"
   when: inventory_hostname == master_hostname
 - name: join nodes
-  shell: "kubeadm reset && {{hostvars[master_hostname].kubeadm_join}} && touch /etc/kubeadm-join.done"
+  shell: >
+     systemctl stop kubelet ; kubeadm reset ; 
+     echo "{{hostvars[master_hostname].kubeadm_join}}" >/etc/kubeadm-join.sh ; 
+     bash /etc/kubeadm-join.sh
   args:
-    creates: /etc/kubeadm-join.done
+    creates: /etc/kubeadm-join.sh
   when: inventory_hostname != master_hostname
 - name: checking all nodes up
   shell: >
