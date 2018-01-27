@@ -10,9 +10,7 @@
       - kubectl
       - kubeadm
       - kubelet
-      - docker
-      - docker-client
-      - docker-common
+      - docker.io
   - file: path=/etc/kubernetes state=absent
   - file: path=/etc/kubectl state=absent
   - file: path=/etc/kubeadm-join.sh state=absent

@@ -1,0 +1,5 @@
+*.retry
+*.log
+playground.*
+samples/
+attic/

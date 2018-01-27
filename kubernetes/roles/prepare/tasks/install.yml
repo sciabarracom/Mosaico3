@@ -1,0 +1,12 @@
+- shell: "apt-get -y update && apt-get install -y apt-transport-https"
+- apt_repository:
+    repo: 'deb http://apt.kubernetes.io/ kubernetes-xenial main'
+    state: present
+- name: install docker and kubernetes
+  apt: name={{ item }} state=present allow_unauthenticated=yes
+  with_items:
+    - docker.io
+    - kubelet
+    - kubeadm
+    - kubectl
+    - ntp

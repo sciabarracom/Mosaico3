@@ -1,0 +1,4 @@
+- sysctl: name=net.ipv4.ip_forward value=1 state=present reload=yes sysctl_set=yes
+- service: name=docker state=started enabled=yes
+- service: name=ntp state=started enabled=yes
+- service: name=kubelet state=started enabled=yes

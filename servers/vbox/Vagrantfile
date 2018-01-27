@@ -13,19 +13,18 @@ memory = 2000
 $script = <<SCRIPT
 sudo mv hosts /etc/hosts
 chmod 0600 /home/vagrant/.ssh/id_rsa
-useradd centos
-usermod -a -G vagrant centos
-cp -Rvf /home/vagrant/.ssh /home/centos
-chown -Rvf centos /home/centos/
-echo SELINUX=disabled >/etc/sysconfig/selinux
-/usr/sbin/reboot
+usermod -a -G vagrant ubuntu
+cp -Rvf /home/vagrant/.ssh /home/ubuntu
+chown -Rvf ubuntu /home/ubuntu
+apt-get -y update
+apt-get -y install python-minimal python-apt
 SCRIPT
 
 Vagrant.configure("2") do |config|
   config.ssh.insert_key = false
   nodes.each do |node|
     config.vm.define node[:hostname] do |nodeconfig|
-      nodeconfig.vm.box = "centos/7"
+      nodeconfig.vm.box = "ubuntu/xenial64"
       nodeconfig.vm.hostname = node[:hostname]
       nodeconfig.vm.network :private_network, ip: node[:ip], virtualbox__intnet: domain
       nodeconfig.vm.provider :virtualbox do |vb|
