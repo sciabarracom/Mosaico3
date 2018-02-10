@@ -31,6 +31,7 @@ virt-install \
 --console pty,target_type=serial \
 --location "$OSPATH" \
 --extra-args 'console=ttyS0' \
---initrd-inject "$PWD/preseed.cfg" 
+--initrd-inject "$PWD/preseed.cfg" \
+--noreboot
 
 #--graphics vnc,port=$PORT,listen=0.0.0.0 \
