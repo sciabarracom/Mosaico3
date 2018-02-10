@@ -1,0 +1,22 @@
+<network>
+  <name>kubernetes</name>
+  <uuid>068aa554-0e4b-11e8-ba89-0ed5f89f718b</uuid>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='virbr2' stp='on' delay='0'/>
+  <mac address='52:54:00:10:00:01'/>
+  <ip address='10.0.0.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='10.0.0.10' end='10.0.0.99'/>
+      <host mac='52:54:00:10:00:09' ip='10.0.0.9'/>
+      <host mac='52:54:00:10:00:10' ip='10.0.0.10'/>
+      <host mac='52:54:00:10:00:11' ip='10.0.0.11'/>
+      <host mac='52:54:00:10:00:12' ip='10.0.0.12'/>
+      <host mac='52:54:00:10:00:13' ip='10.0.0.13'/>
+    </dhcp>
+  </ip>
+</network>
+
