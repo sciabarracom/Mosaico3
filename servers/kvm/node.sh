@@ -16,7 +16,7 @@ IMAGE="$DIR/$HOST/image.qcow2"
 
 test -e "$IMAGE" || qemu-img create -f qcow2 "$IMAGE" ${DISK}G
 
-echo virt-install \
+virt-install \
 --name $HOST \
 --ram "$(expr $MEMORY \* 1024)" \
 --disk path=$IMAGE \
@@ -31,6 +31,4 @@ echo virt-install \
 --initrd-inject "$DIR/$HOST/preseed.cfg" \
 --noreboot
 
-#--graphics vnc,port=$PORT,listen=0.0.0.0 \
-#ISO=ubuntu-16.04.3-server-amd64.iso
 

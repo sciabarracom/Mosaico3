@@ -4,7 +4,7 @@ cd "$(dirname $0)"
 
 NODE=${1:?node nr}
 HOST=${2:?hostname}
-PASSWD=${3:?hashed passwd}
+PASSWD=${3:?passwd}
 KEYPUB=${4:?keypub}
 DIR=/var/kvm/mosaico
 mkdir -p $DIR/$HOST
@@ -103,9 +103,9 @@ d-i partman/confirm_nooverwrite boolean true
 # To create a normal user account.
 d-i passwd/user-fullname string Vagrant 
 d-i passwd/username string vagrant
-#d-i passwd/user-password password $PASSWD
-#d-i passwd/user-password-again password $PASSWD
-d-i passwd/user-password-crypted password $PASSWD
+d-i passwd/user-password password $PASSWD
+d-i passwd/user-password-again password $PASSWD
+#d-i passwd/user-password-crypted password $PASSWD
 
 # The installer will warn about weak passwords. If you are sure you know
 # what you're doing and want to override it, uncomment this.
@@ -208,12 +208,11 @@ d-i debian-installer/exit/poweroff boolean true
 # directly, or use the apt-install and in-target commands to easily install
 # packages and run commands in the target system.
 #d-i preseed/late_command string in-target wget --output-document=/tmp/post-install.sh http://preseed.handsoff.local/ubuntu-16-04/post-install.sh; in-target /bin/sh /tmp/post-install.sh
-d-i preseed/late_command string \
-in-target mkdir -p /root/.ssh ; \
-in-target echo "$KEYPUB" >>/root/.ssh/authorized_keys ; \
-in-target mkdir -p /home/vagrant/.ssh ; \
-in-target echo "$KEYPUB" >>/home/vagrant/.ssh/authorized_keys ; \
-in-target chown -R vagrant /home/vagrant/.ssh ; \
-in-target chmod 0600 /root/.ssh/authorized_keys /home/vagrant/.ssh/authorized_keys ; \
-in-target echo "vagrant ALL=(ALL:ALL) NOPASSWD: ALL" >/etc/sudoers.d/vagrant
+d-i preseed/late_command string chroot /target bash -c "mkdir -p /root/.ssh ;\
+echo '$KEYPUB' >/root/.ssh/authorized_keys ;\
+mkdir -p /home/vagrant/.ssh ;\
+echo '$KEYPUB' >/home/vagrant/.ssh/authorized_keys ;\
+chown -R vagrant /home/vagrant/.ssh ;\
+chmod 0600 /root/.ssh/authorized_keys /home/vagrant/.ssh/authorized_keys ;\
+echo 'vagrant ALL=(ALL:ALL) NOPASSWD: ALL' >/etc/sudoers.d/vagrant"
 XXX_END_OF_FILE_XXX
