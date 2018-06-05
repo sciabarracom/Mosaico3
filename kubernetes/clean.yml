@@ -5,7 +5,7 @@
   gather_facts: True
   tasks:
   - name: uninstall docker
-    yum: name={{ item }} state=absent
+    apt: name={{ item }} state=absent
     with_items:
       - kubectl
       - kubeadm

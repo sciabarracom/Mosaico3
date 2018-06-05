@@ -24,11 +24,12 @@ Vagrant.configure("2") do |config|
   config.ssh.insert_key = false
   nodes.each do |node|
     config.vm.define node[:hostname] do |nodeconfig|
+      name = node[:hostname]
       nodeconfig.vm.box = "ubuntu/xenial64"
-      nodeconfig.vm.hostname = node[:hostname]
+      nodeconfig.vm.hostname = name
       nodeconfig.vm.network :private_network, ip: node[:ip], virtualbox__intnet: domain
       nodeconfig.vm.provider :virtualbox do |vb|
-        vb.name = node[:hostname]+"."+domain
+        vb.name = name+"."+domain
         vb.memory = memory
         vb.cpus = 1
         vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
@@ -39,6 +40,9 @@ Vagrant.configure("2") do |config|
       nodeconfig.vm.provision "file", source: "hosts", destination: "hosts"
       nodeconfig.vm.provision "file", source: "~/.vagrant.d/insecure_private_key", destination: "/home/vagrant/.ssh/id_rsa"
       nodeconfig.vm.provision "shell", inline: $script
+      if name == "master"
+         nodeconfig.vm.network  "forwarded_port", guest: 6443, host: 6443
+      end
     end
   end
 end

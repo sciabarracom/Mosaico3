@@ -79,3 +79,26 @@ Finally you can provision with `ansible` Kubernetes:
 
 - `cd ../../kubernetes`
 - `ansible-playbook sites.yml`
+
+# Access the cluster with kubectl
+
+Vagrant exposes port 6443 and the certificate can be used with the master hostname (by default `master`). 
+
+If you have installed [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) you can retrieve the configuration with:
+
+```
+ssh master sudo cat /etc/kubernetes/admin.conf  | sed -e 's/10.0.0.10/master/' >~/.kube/config
+```
+
+After this command check you can access the cluster with `kubectl get nodes`. You should get:
+
+```
+$ kubectl get nodes
+NAME      STATUS    AGE       VERSION
+master    Ready     10m       v1.10.3
+node1     Ready     9m        v1.10.3
+node2     Ready     9m        v1.10.3
+node3     Ready     9m        v1.10.3
+```
+
+
