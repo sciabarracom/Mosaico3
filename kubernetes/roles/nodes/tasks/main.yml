@@ -8,7 +8,7 @@
   when: inventory_hostname == master_hostname
 - name: join nodes
   shell: >
-     systemctl stop kubelet ; kubeadm reset ; 
+     systemctl stop kubelet ; yes | kubeadm reset ; 
      echo "{{hostvars[master_hostname].kubeadm_join}}" >/etc/kubeadm-join.sh ; 
      bash /etc/kubeadm-join.sh
   args:

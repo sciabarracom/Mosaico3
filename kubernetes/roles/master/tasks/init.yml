@@ -2,7 +2,7 @@
 - lineinfile: dest=/etc/sysctl.conf line='net.bridge.bridge-nf-call-iptables = 1' state=present
 - name: initialize kube
   shell: >
-       kubeadm reset &&
+       yes | kubeadm reset &&
        sysctl -p &&
        kubeadm init --apiserver-advertise-address=10.0.0.10 --pod-network-cidr=10.244.0.0/16
   args:
