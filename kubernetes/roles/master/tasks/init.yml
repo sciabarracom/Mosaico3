@@ -3,7 +3,7 @@
 - name: initialize kube
   shell: >
        sysctl -p &&
-       kubeadm reset &&
+       kubeadm reset --force &&
        kubeadm init --apiserver-advertise-address=10.0.0.10 --apiserver-cert-extra-sans={{inventory_hostname}} --pod-network-cidr=10.244.0.0/16
   args:
     creates: /etc/kubeadm-join.sh
